@@ -1,5 +1,8 @@
 plugins {
     id "com.android.application"
+    // START: FlutterFire Configuration
+    id 'com.google.gms.google-services'
+    // END: FlutterFire Configuration
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
@@ -25,11 +28,13 @@ if (flutterVersionName == null) {
 android {
     namespace "com.example.kisisel_ajanda"
     compileSdk flutter.compileSdkVersion
+    ndkVersion "25.1.8937393"
     ndkVersion flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
@@ -64,4 +69,8 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+
+    // BU SATIRI EKLE:
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+}

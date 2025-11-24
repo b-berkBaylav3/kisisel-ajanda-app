@@ -1,18 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'core/theme/app_theme.dart';
+import 'core/router/app_router.dart';
+import 'features/tasks/data/models/task_model.dart';
+
+// İŞTE EKSİK OLAN SATIR BU:
+import 'core/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Adım 1'de Firebase burada başlatılacak:
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // Hive (Yerel Veritabanı) Başlatma
+  // Hive Başlatma
   await Hive.initFlutter();
-  // İleride: Hive.registerAdapter(TaskAdapter());
-  // İleride: await Hive.openBox('tasks');
+
+  // Adapter'ları Tanıt
+  Hive.registerAdapter(TaskAdapter());
+  Hive.registerAdapter(TaskPriorityAdapter());
+
+  // Veri Kutusunu Aç
+  await Hive.openBox<Task>('tasksBox');
+
+  // Türkçe Tarih Formatı
+  await initializeDateFormatting('tr_TR', null);
+
+  // Bildirim Servisini Başlat (Artık hata vermeyecek)
+  await NotificationService().init();
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -22,19 +36,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Kişisel Ajanda',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'Kişisel Ajanda Kurulumu Başarılı!\nAdım 1: Firebase Bekleniyor...',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
+      routerConfig: goRouter,
     );
   }
 }
